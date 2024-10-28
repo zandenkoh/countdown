@@ -8,10 +8,14 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
     <script src="https://kit.fontawesome.com/a47fae704c.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Roboto", sans-serif;
             background-color: #f5f8fa;
             color: #333;
             display: flex;
@@ -20,16 +24,19 @@
             height: 100vh;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         /* Navbar */
+
         .navbar {
-            background-color: #1da1f2;
+            background-color: #000;
             color: white;
             width: 100%;
             padding: 10px 15px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            text-align: center;
             align-items: center;
             border-radius: 8px 8px 0 0;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -43,6 +50,7 @@
         }
 
         /* Main Container */
+
         .main-container {
             display: flex;
             width: 80%;
@@ -51,39 +59,67 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            margin-top: 60px; /* Space for navbar */
+            margin-top: 60px;
+            /* Space for navbar */
         }
 
         /* Countdown and Tasks */
+
         .countdown-container {
             flex: 1;
             display: flex;
+            flex-direction: column;
+            /* Stack items vertically */
             align-items: center;
+            /* Center align items horizontally */
             justify-content: center;
+            /* Center align items vertically */
             padding: 20px;
             border-right: 1px solid #ddd;
+        }
+
+        #countdownName {
+            margin-bottom: 10px;
+            /* Add space between countdown name and timer */
+        }
+
+        #countdownTimer {
+            margin-bottom: 20px;
+            /* Add space between timer and button */
         }
 
         .tasks-container {
             flex: 1;
             padding: 20px;
-            display: none; /* Hidden initially */
+            display: none;
+            /* Hidden initially */
             overflow-y: auto;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 25px;
             margin-bottom: 20px;
         }
 
         .countdown {
-            font-size: 36px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 24px;
+            font-family: "Alumni Sans Pinstripe", sans-serif;
+            font-weight: 800;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-item span {
+            font-size: 48px;
             font-weight: bold;
-            color: #1da1f2;
-            margin-top: 20px;
         }
 
         /* Tasks Styles */
+
         .tasks-header {
             display: flex;
             justify-content: space-between;
@@ -108,12 +144,13 @@
         }
 
         /* Button and Input Styles */
+
         button {
-            background-color: #1da1f2;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
+            background-color: transparent;
+            color: #999;
+            border: 1px solid #999;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
@@ -121,7 +158,25 @@
         }
 
         button:hover {
-            opacity: 0.8;
+            color: #555;
+            border: 1px solid #555;
+        }
+        
+        #addTaskButton {
+            background-color: transparent;
+            color: #999;
+            border: 1px solid #999;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: fit-content;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        #addTaskButton:hover {
+            color: #555;
+            border: 1px solid #555;
         }
 
         input[type="text"] {
@@ -131,9 +186,12 @@
             width: calc(100% - 22px);
             margin-bottom: 10px;
             box-sizing: border-box;
+            outline: none;
+            
         }
-        
+
         /* Toggle Button */
+
         #toggleTasksButton {
             margin: 10px 0;
             width: auto;
@@ -146,22 +204,38 @@
 <body>
     <!-- Navbar -->
     <div class="navbar">
-        <i class="fas fa-arrow-left"></i>
         <span>Countdown Timer</span>
-        <i class="fas fa-cog"></i>
     </div>
 
     <!-- Main Container -->
     <div class="main-container">
         <div class="countdown-container">
             <div id="countdownName">Countdown</div>
-            <div id="countdownTimer" class="countdown">Loading...</div>
+            <div id="countdownTimer" class="countdown">
+                <div class="countdown-item">
+                    <span id="days">0</span>
+                    <label>Days</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">0</span>
+                    <label>Hours</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">0</span>
+                    <label>Minutes</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">0</span>
+                    <label>Seconds</label>
+                </div>
+            </div>
+
             <button id="toggleTasksButton">Show Tasks</button>
         </div>
         <div class="tasks-container" id="tasksContainer">
             <div class="tasks-header">
                 <h2>Tasks</h2>
-                <button id="addTaskButton">+ Create Task</button>
+                <button id="addTaskButton">Add Tasks</button>
             </div>
             <div id="taskList">
                 <!-- Task items will be dynamically added here -->
@@ -200,7 +274,7 @@
                 const endDate = new Date(data.endDate).getTime();
                 const countdownTimer = document.getElementById('countdownTimer');
 
-                function updateCountdown() {
+                const updateCountdown = () => {
                     const now = new Date().getTime();
                     const distance = endDate - now;
 
@@ -215,8 +289,13 @@
                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                    countdownTimer.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                }
+                    // Update the countdown numbers
+                    document.getElementById('days').innerText = days;
+                    document.getElementById('hours').innerText = hours;
+                    document.getElementById('minutes').innerText = minutes;
+                    document.getElementById('seconds').innerText = seconds;
+                };
+
 
                 const timerInterval = setInterval(updateCountdown, 1000);
 
