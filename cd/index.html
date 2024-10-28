@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Timer</title>
+    <title>Countdown</title>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
     <script src="https://kit.fontawesome.com/a47fae704c.js" crossorigin="anonymous"></script>
@@ -99,6 +99,7 @@
         h1 {
             font-size: 25px;
             margin-bottom: 20px;
+            user-select: none;
         }
 
         .countdown {
@@ -107,15 +108,30 @@
             font-size: 24px;
             font-family: "Alumni Sans Pinstripe", sans-serif;
             font-weight: 800;
+            user-select: none;
         }
 
         .countdown-item {
-            text-align: center;
+            display: flex;
+            /* Use flexbox for each countdown item */
+            flex-direction: column;
+            /* Stack items vertically */
+            align-items: center;
+            /* Center align text horizontally */
+            margin: 0 13px;
         }
 
         .countdown-item span {
             font-size: 48px;
-            font-weight: bold;
+            /* Increase font size for the numbers */
+            font-weight: 900;
+            /* Make numbers bold */
+        }
+        
+        .countdown-item label {
+            font-size: 25px;
+            font-weight: 600;
+            color: #888;
         }
 
         /* Tasks Styles */
@@ -161,7 +177,7 @@
             color: #555;
             border: 1px solid #555;
         }
-        
+
         #addTaskButton {
             background-color: transparent;
             color: #999;
@@ -173,7 +189,7 @@
             font-weight: bold;
             margin-top: 10px;
         }
-        
+
         #addTaskButton:hover {
             color: #555;
             border: 1px solid #555;
@@ -187,7 +203,6 @@
             margin-bottom: 10px;
             box-sizing: border-box;
             outline: none;
-            
         }
 
         /* Toggle Button */
