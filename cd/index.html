@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
+
         body {
             font-family: "Roboto", sans-serif;
             background-color: #f5f8fa;
@@ -27,6 +28,7 @@
         }
 
         /* Navbar */
+
         .navbar {
             background-color: #000;
             color: white;
@@ -43,6 +45,7 @@
         }
 
         /* Main Container */
+
         .main-container {
             display: flex;
             width: 80%;
@@ -55,6 +58,7 @@
         }
 
         /* Countdown and Tasks */
+
         .countdown-container {
             flex: 1;
             display: flex;
@@ -116,6 +120,7 @@
         }
 
         /* Tasks Styles */
+
         .tasks-header {
             display: flex;
             justify-content: space-between;
@@ -127,7 +132,8 @@
             display: flex;
             align-items: center;
             margin: 10px 0;
-            justify-content: space-between; /* Adjust alignment for delete button */
+            justify-content: space-between;
+            /* Adjust alignment for delete button */
         }
 
         .task input[type="checkbox"] {
@@ -149,6 +155,7 @@
         }
 
         /* Button and Input Styles */
+
         button {
             background-color: transparent;
             color: #999;
@@ -194,11 +201,51 @@
         }
 
         /* Toggle Button */
+
         #toggleTasksButton {
             margin: 10px 0;
             width: auto;
             font-weight: normal;
             display: inline-block;
+        }
+
+        /* Styles for edit and delete buttons */
+
+        .edit-button,
+        .delete-button {
+            background-color: transparent;
+            /* Light blue background */
+            color: #999;
+            /* Bootstrap primary color */
+            border: 1px solid #999;
+            /* Border with the same color */
+            border-radius: 10px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .edit-button:hover {
+            color: #555;
+            /* White text on hover */
+        }
+
+        .delete-button {
+            background-color: transparent;
+            /* Light red background */
+            color: #dc3545;
+            /* Bootstrap danger color */
+            border: 1px solid #dc3545;
+            /* Border with the same color */
+        }
+
+        .delete-button:hover {
+            background-color: #dc3545;
+            /* Darker red on hover */
+            color: white;
+            /* White text on hover */
         }
     </style>
 </head>
@@ -329,6 +376,7 @@
 
                             const editButton = document.createElement('button');
                             editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome edit icon
+                            editButton.classList.add('edit-button'); // Add edit button class
                             editButton.onclick = () => {
                                 const newTaskName = prompt("Edit task name:", taskName);
                                 if (newTaskName && newTaskName.trim() !== "") {
@@ -339,11 +387,13 @@
 
                             const deleteButton = document.createElement('button');
                             deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome delete icon
+                            deleteButton.classList.add('delete-button'); // Add delete button class
                             deleteButton.onclick = () => {
                                 if (confirm(`Are you sure you want to delete the task "${taskName}"?`)) {
                                     db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set(null); // Remove task
                                 }
                             };
+
 
                             taskItem.appendChild(checkbox);
                             taskItem.appendChild(taskLabel);
