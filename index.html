@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Countdown</title>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://kit.fontawesome.com/a47fae704c.js" crossorigin="anonymous"></script>
+    <style>
+        /* CSS for the Twitter-like UI design */
+
+        body {
+            font-family: "Roboto", sans-serif;
+            background-color: #f5f8fa;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 50px 80px;
+            width: 300px;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        label {
+            position: absolute;
+            margin-top: -3px;
+            font-size: 13px;
+        }
+
+        input {
+            margin: 20px 0;
+            padding: 15px 15px;
+            width: 100%;
+            max-width: 100%;
+            outline: none;
+            border: none;
+            background: #f5f8fa;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #1da1f2;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+        
+        button.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create Countdown</h1>
+        <label for="countdownName">Name of Countdown</label>
+        <input type="text" id="countdownName" placeholder="Name of the countdown">
+        <label for="endDate">End Date and Time</label>
+        <input type="datetime-local" id="endDate" style="cursor: pointer;">
+        <button id="createCountdown">Create</button>
+    </div>
+
+    <!-- Firebase configuration and JavaScript -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhH1EKxSanB1Kb0wHdBgIk1PYJu2eJ9IE",
+            authDomain: "games-266f7.firebaseapp.com",
+            databaseURL: "https://games-266f7-default-rtdb.firebaseio.com",
+            projectId: "games-266f7",
+            storageBucket: "games-266f7.appspot.com",
+            messagingSenderId: "863641160518",
+            appId: "1:863641160518:web:8dcff5d78ffaf4628ff347"
+        };
+
+        // Initialise Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Wait for DOM to be ready before accessing elements
+        window.onload = () => {
+            const createButton = document.getElementById('createCountdown');
+
+            // Event listener for creating a countdown
+            createButton.addEventListener('click', () => {
+                const countdownName = document.getElementById('countdownName').value;
+                const endDate = document.getElementById('endDate').value;
+
+                if (countdownName && endDate) {
+                    // Disable the button to prevent multiple clicks
+                    createButton.disabled = true;
+
+                    // Create unique countdown ID
+                    const countdownRef = db.ref('countdowns').push();
+
+                    // Set data in Firebase
+                    countdownRef.set({
+                        name: countdownName,
+                        endDate: endDate,
+                        darkMode: false,
+                        tasks: {}
+                    }).then(() => {
+                        // Reset form fields and enable button again
+                        document.getElementById('countdownName').value = '';
+                        document.getElementById('endDate').value = '';
+                        createButton.disabled = false;
+
+                        // Redirect to countdown.html with the countdown ID
+                        window.location.href = `./cd/?id=${countdownRef.key}`;
+                    }).catch(error => {
+                        console.error("Error adding countdown:", error);
+                        alert("Error creating countdown. Please try again.");
+                        // Re-enable the button in case of error
+                        createButton.disabled = false;
+                    });
+                } else {
+                    alert("Please fill in all fields.");
+                }
+            });
+        };
+    </script>
+
+</body>
+
+</html>
