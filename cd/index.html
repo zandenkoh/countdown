@@ -130,10 +130,11 @@
 
         .task {
             display: flex;
-            align-items: center;
-            margin: 10px 0;
             justify-content: space-between;
-            /* Adjust alignment for delete button */
+            /* Space between text and buttons */
+            align-items: center;
+            /* Align items vertically */
+            margin: 10px 0;
         }
 
         .task input[type="checkbox"] {
@@ -147,11 +148,12 @@
         }
 
         .task button {
-            background: none;
-            border: none;
-            color: red;
+            background-color: #fff;
+            color: #999;
+            padding: 0;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
+            outline: none;
         }
 
         /* Button and Input Styles */
@@ -211,41 +213,30 @@
 
         /* Styles for edit and delete buttons */
 
-        .edit-button,
-        .delete-button {
-            background-color: transparent;
-            /* Light blue background */
+        .edit-button {
+            background-color: #fff;
             color: #999;
-            /* Bootstrap primary color */
-            border: 1px solid #999;
-            /* Border with the same color */
-            border-radius: 10px;
-            width: 30px;
-            height: 30px;
+            padding: 0;
             cursor: pointer;
             font-size: 15px;
-            transition: background-color 0.3s, color 0.3s;
+            outline: none;
         }
 
         .edit-button:hover {
             color: #555;
-            /* White text on hover */
         }
 
         .delete-button {
-            background-color: transparent;
-            /* Light red background */
-            color: #dc3545;
-            /* Bootstrap danger color */
-            border: 1px solid #dc3545;
-            /* Border with the same color */
+            background-color: #fff;
+            color: #999;
+            padding: 0;
+            cursor: pointer;
+            font-size: 15px;
+            outline: none;
         }
 
-        .delete-button:hover {
-            background-color: #dc3545;
-            /* Darker red on hover */
-            color: white;
-            /* White text on hover */
+        .delete-button {
+            color: #555;
         }
     </style>
 </head>
@@ -364,6 +355,11 @@
                             taskItem.classList.add('task');
                             if (taskCompleted) taskItem.classList.add('completed');
 
+                            // Create a container for the checkbox and label
+                            const taskContainer = document.createElement('div');
+                            taskContainer.style.display = 'flex'; // Use flexbox for checkbox and label alignment
+                            taskContainer.style.alignItems = 'center'; // Vertically align items in the center
+
                             const checkbox = document.createElement('input');
                             checkbox.type = 'checkbox';
                             checkbox.checked = taskCompleted;
@@ -373,6 +369,10 @@
 
                             const taskLabel = document.createElement('label');
                             taskLabel.innerText = taskName;
+
+                            // Append the checkbox and label to the task container
+                            taskContainer.appendChild(checkbox);
+                            taskContainer.appendChild(taskLabel);
 
                             const editButton = document.createElement('button');
                             editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome edit icon
@@ -394,12 +394,15 @@
                                 }
                             };
 
-
-                            taskItem.appendChild(checkbox);
-                            taskItem.appendChild(taskLabel);
-                            taskItem.appendChild(editButton);
-                            taskItem.appendChild(deleteButton);
+                            // Append the task container and buttons to the task item
+                            taskItem.appendChild(taskContainer); // Add checkbox and label container
+                            taskItem.appendChild(editButton); // Add edit button
+                            taskItem.appendChild(deleteButton); // Add delete button
                             taskList.appendChild(taskItem);
+
+
+
+
                         }
                     } else {
                         tasksContainer.style.display = 'block'; // Show task container
