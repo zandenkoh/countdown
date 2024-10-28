@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
-
         body {
             font-family: "Roboto", sans-serif;
             background-color: #f5f8fa;
@@ -28,7 +27,6 @@
         }
 
         /* Navbar */
-
         .navbar {
             background-color: #000;
             color: white;
@@ -44,13 +42,7 @@
             top: 0;
         }
 
-        .navbar i {
-            cursor: pointer;
-            color: white;
-        }
-
         /* Main Container */
-
         .main-container {
             display: flex;
             width: 80%;
@@ -60,39 +52,33 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-top: 60px;
-            /* Space for navbar */
         }
 
         /* Countdown and Tasks */
-
         .countdown-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            /* Stack items vertically */
             align-items: center;
-            /* Center align items horizontally */
             justify-content: center;
-            /* Center align items vertically */
             padding: 20px;
             border-right: 1px solid #ddd;
         }
 
         #countdownName {
-            margin-bottom: 10px;
-            /* Add space between countdown name and timer */
+            font-size: 20px;
+            margin-bottom: 35px;
+            font-weight: 700;
         }
 
         #countdownTimer {
             margin-bottom: 20px;
-            /* Add space between timer and button */
         }
 
         .tasks-container {
             flex: 1;
             padding: 20px;
             display: none;
-            /* Hidden initially */
             overflow-y: auto;
         }
 
@@ -113,21 +99,16 @@
 
         .countdown-item {
             display: flex;
-            /* Use flexbox for each countdown item */
             flex-direction: column;
-            /* Stack items vertically */
             align-items: center;
-            /* Center align text horizontally */
             margin: 0 13px;
         }
 
         .countdown-item span {
             font-size: 48px;
-            /* Increase font size for the numbers */
             font-weight: 900;
-            /* Make numbers bold */
         }
-        
+
         .countdown-item label {
             font-size: 25px;
             font-weight: 600;
@@ -135,7 +116,6 @@
         }
 
         /* Tasks Styles */
-
         .tasks-header {
             display: flex;
             justify-content: space-between;
@@ -147,6 +127,7 @@
             display: flex;
             align-items: center;
             margin: 10px 0;
+            justify-content: space-between; /* Adjust alignment for delete button */
         }
 
         .task input[type="checkbox"] {
@@ -159,8 +140,15 @@
             text-decoration: line-through;
         }
 
-        /* Button and Input Styles */
+        .task button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
+        /* Button and Input Styles */
         button {
             background-color: transparent;
             color: #999;
@@ -206,7 +194,6 @@
         }
 
         /* Toggle Button */
-
         #toggleTasksButton {
             margin: 10px 0;
             width: auto;
@@ -296,6 +283,8 @@
                     if (distance < 0) {
                         countdownTimer.innerText = "Countdown Ended!";
                         clearInterval(timerInterval);
+                        // Show notification for countdown completion
+                        alert("The countdown has ended!");
                         return;
                     }
 
@@ -310,7 +299,6 @@
                     document.getElementById('minutes').innerText = minutes;
                     document.getElementById('seconds').innerText = seconds;
                 };
-
 
                 const timerInterval = setInterval(updateCountdown, 1000);
 
@@ -339,8 +327,28 @@
                             const taskLabel = document.createElement('label');
                             taskLabel.innerText = taskName;
 
+                            const editButton = document.createElement('button');
+                            editButton.innerHTML = '<i class="fas fa-edit"></i>'; // Font Awesome edit icon
+                            editButton.onclick = () => {
+                                const newTaskName = prompt("Edit task name:", taskName);
+                                if (newTaskName && newTaskName.trim() !== "") {
+                                    db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set(null); // Remove old task
+                                    db.ref(`countdowns/${countdownId}/tasks/${newTaskName.trim()}`).set(checkbox.checked); // Add new task
+                                }
+                            };
+
+                            const deleteButton = document.createElement('button');
+                            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Font Awesome delete icon
+                            deleteButton.onclick = () => {
+                                if (confirm(`Are you sure you want to delete the task "${taskName}"?`)) {
+                                    db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set(null); // Remove task
+                                }
+                            };
+
                             taskItem.appendChild(checkbox);
                             taskItem.appendChild(taskLabel);
+                            taskItem.appendChild(editButton);
+                            taskItem.appendChild(deleteButton);
                             taskList.appendChild(taskItem);
                         }
                     } else {
