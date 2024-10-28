@@ -241,9 +241,17 @@
             border: none;
         }
 
-        .delete-button {
+        .delete-button:hover {
             color: #555;
             border: none;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 5px;
+            /* Space between buttons */
+            margin-left: auto;
+            /* Pushes buttons to the far right */
         }
     </style>
 </head>
@@ -401,10 +409,17 @@
                                 }
                             };
 
-                            // Append the task container and buttons to the task item
+                            // Create a container for the edit and delete buttons
+                            const buttonContainer = document.createElement('div');
+                            buttonContainer.classList.add('button-container'); // Add button container class
+
+                            buttonContainer.appendChild(editButton); // Add edit button to the container
+                            buttonContainer.appendChild(deleteButton); // Add delete button to the container
+
+                            // Append the task container and button container to the task item
                             taskItem.appendChild(taskContainer); // Add checkbox and label container
-                            taskItem.appendChild(editButton); // Add edit button
-                            taskItem.appendChild(deleteButton); // Add delete button
+                            taskItem.appendChild(buttonContainer); // Add button container
+
                             taskList.appendChild(taskItem);
 
 
