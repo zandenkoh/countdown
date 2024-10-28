@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://kit.fontawesome.com/a47fae704c.js" crossorigin="anonymous"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f8fa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1da1f2;
+            color: white;
+            width: 100%;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+        }
+
+        .navbar i {
+            cursor: pointer;
+            color: white;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            width: 80%;
+            height: 80vh;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 60px; /* Space for navbar */
+        }
+
+        /* Countdown and Tasks */
+        .countdown-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .tasks-container {
+            flex: 1;
+            padding: 20px;
+            display: none; /* Hidden initially */
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1da1f2;
+            margin-top: 20px;
+        }
+
+        /* Tasks Styles */
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .task.completed {
+            color: #888;
+            text-decoration: line-through;
+        }
+
+        /* Button and Input Styles */
+        button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        
+        /* Toggle Button */
+        #toggleTasksButton {
+            margin: 10px 0;
+            width: auto;
+            font-weight: normal;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <i class="fas fa-arrow-left"></i>
+        <span>Countdown Timer</span>
+        <i class="fas fa-cog"></i>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="countdown-container">
+            <div id="countdownName">Countdown</div>
+            <div id="countdownTimer" class="countdown">Loading...</div>
+            <button id="toggleTasksButton">Show Tasks</button>
+        </div>
+        <div class="tasks-container" id="tasksContainer">
+            <div class="tasks-header">
+                <h2>Tasks</h2>
+                <button id="addTaskButton">+ Create Task</button>
+            </div>
+            <div id="taskList">
+                <!-- Task items will be dynamically added here -->
+                <p>No tasks. Create a new task below.</p>
+            </div>
+            <input type="text" id="newTaskInput" placeholder="Enter task name" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhH1EKxSanB1Kb0wHdBgIk1PYJu2eJ9IE",
+            authDomain: "games-266f7.firebaseapp.com",
+            databaseURL: "https://games-266f7-default-rtdb.firebaseio.com",
+            projectId: "games-266f7",
+            storageBucket: "games-266f7.appspot.com",
+            messagingSenderId: "863641160518",
+            appId: "1:863641160518:web:8dcff5d78ffaf4628ff347"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Get countdown ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const countdownId = urlParams.get("id");
+
+        if (countdownId) {
+            // Load countdown data
+            db.ref('countdowns/' + countdownId).once('value').then(snapshot => {
+                const data = snapshot.val();
+                document.getElementById('countdownName').innerText = data.name;
+
+                // Initialize countdown timer
+                const endDate = new Date(data.endDate).getTime();
+                const countdownTimer = document.getElementById('countdownTimer');
+
+                function updateCountdown() {
+                    const now = new Date().getTime();
+                    const distance = endDate - now;
+
+                    if (distance < 0) {
+                        countdownTimer.innerText = "Countdown Ended!";
+                        clearInterval(timerInterval);
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    countdownTimer.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                }
+
+                const timerInterval = setInterval(updateCountdown, 1000);
+
+                // Load tasks
+                const taskList = document.getElementById('taskList');
+                db.ref(`countdowns/${countdownId}/tasks`).on('value', snapshot => {
+                    taskList.innerHTML = '';
+                    const tasks = snapshot.val();
+                    const tasksContainer = document.getElementById('tasksContainer');
+
+                    if (tasks) {
+                        tasksContainer.style.display = 'block'; // Show task container
+                        for (const taskName in tasks) {
+                            const taskCompleted = tasks[taskName];
+                            const taskItem = document.createElement('div');
+                            taskItem.classList.add('task');
+                            if (taskCompleted) taskItem.classList.add('completed');
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.checked = taskCompleted;
+                            checkbox.addEventListener('change', () => {
+                                db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set(checkbox.checked);
+                            });
+
+                            const taskLabel = document.createElement('label');
+                            taskLabel.innerText = taskName;
+
+                            taskItem.appendChild(checkbox);
+                            taskItem.appendChild(taskLabel);
+                            taskList.appendChild(taskItem);
+                        }
+                    } else {
+                        tasksContainer.style.display = 'block'; // Show task container
+                        taskList.innerHTML = "<p>No tasks. Create a new task below.</p>";
+                    }
+                });
+            }).catch(error => {
+                console.error("Error loading countdown:", error);
+                alert("Error loading countdown. Please try again.");
+            });
+
+            // Handle task creation
+            const newTaskInput = document.getElementById('newTaskInput');
+            document.getElementById('addTaskButton').addEventListener('click', () => {
+                newTaskInput.style.display = 'block';
+                newTaskInput.focus();
+            });
+
+            newTaskInput.addEventListener('keypress', event => {
+                if (event.key === 'Enter' && newTaskInput.value.trim()) {
+                    const taskName = newTaskInput.value.trim();
+                    db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set(false);
+                    newTaskInput.value = '';
+                    newTaskInput.style.display = 'none';
+                }
+            });
+
+            // Toggle task container visibility
+            document.getElementById('toggleTasksButton').addEventListener('click', () => {
+                const tasksContainer = document.getElementById('tasksContainer');
+                const isVisible = tasksContainer.style.display === 'block';
+                tasksContainer.style.display = isVisible ? 'none' : 'block';
+                document.getElementById('toggleTasksButton').innerText = isVisible ? 'Show Tasks' : 'Hide Tasks';
+            });
+        } else {
+            document.getElementById('countdownTimer').innerText = "Countdown not found!";
+        }
+    </script>
+</body>
+
+</html>
