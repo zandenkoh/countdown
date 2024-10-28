@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown</title>
+    <title>Countdown with Tasks</title>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://kit.fontawesome.com/a47fae704c.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
-        /* General Styling */
+        /* General Styles */
+
         body {
             font-family: "Roboto", sans-serif;
             background-color: #f5f8fa;
@@ -22,14 +25,34 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            transition: background-color 0.5s, color 0.5s;
         }
+
         /* Dark Mode */
+
         .dark-mode {
-            background-color: #222;
-            color: #eee;
+            background-color: #333;
+            color: #fff;
         }
+
+        /* Navbar */
+
+        .navbar {
+            background-color: #000;
+            color: white;
+            width: 100%;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+        }
+
         /* Main Container */
+
         .main-container {
             display: flex;
             width: 80%;
@@ -38,11 +61,11 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            margin-top: 60px;
         }
-        .dark-mode .main-container {
-            background-color: #333;
-        }
+
         /* Countdown and Tasks */
+
         .countdown-container {
             flex: 1;
             display: flex;
@@ -52,44 +75,81 @@
             padding: 20px;
             border-right: 1px solid #ddd;
         }
+
         #countdownName {
             font-size: 20px;
             margin-bottom: 35px;
             font-weight: 700;
         }
-        .dark-mode #countdownName {
-            color: #ffeb3b;
+
+        #countdownTimer {
+            margin-bottom: 20px;
         }
+
         .tasks-container {
             flex: 1;
             padding: 20px;
             display: none;
             overflow-y: auto;
         }
+
+        /* Countdown Styles */
+
+        .countdown {
+            display: flex;
+            justify-content: space-around;
+            font-size: 24px;
+            font-family: "Alumni Sans Pinstripe", sans-serif;
+            font-weight: 800;
+            user-select: none;
+        }
+
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 13px;
+        }
+
+        .countdown-item span {
+            font-size: 48px;
+            font-weight: 900;
+        }
+
+        .countdown-item label {
+            font-size: 25px;
+            font-weight: 600;
+            color: #888;
+        }
+
         /* Task Styles */
+
         .tasks-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
+
         .task {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-            font-size: 16px;
+            margin: 10px 0;
         }
+
         .task input[type="checkbox"] {
             margin-right: 10px;
             cursor: pointer;
         }
+
         .task.completed {
             color: #888;
             text-decoration: line-through;
         }
+
         /* Progress Bar */
+
         #progressContainer {
             background-color: #ddd;
             width: 100%;
@@ -98,39 +158,60 @@
             overflow: hidden;
             margin-bottom: 10px;
         }
+
         #progressBar {
             height: 100%;
             background-color: #4caf50;
             width: 0;
             transition: width 0.3s;
         }
-        /* Buttons */
+
+        /* Button Styles */
+
         button {
-            background-color: #666;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        .dark-mode button {
-            background-color: #555;
-        }
-        #themeToggleButton {
-            position: absolute;
-            top: 10px;
-            right: 10px;
             background-color: transparent;
             color: #999;
             border: 1px solid #999;
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
         }
-        .dark-mode #themeToggleButton {
-            color: #ffeb3b;
-            border: 1px solid #ffeb3b;
+
+        button:hover {
+            color: #555;
+            border: 1px solid #555;
+        }
+
+        #themeToggleButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .edit-button,
+        .delete-button {
+            background-color: #fff;
+            color: #999;
+            padding: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            border: none;
+            outline: none;
+        }
+
+        .edit-button:hover,
+        .delete-button:hover {
+            color: #555;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 5px;
+            /* Space between buttons */
+            margin-left: auto;
+            /* Pushes buttons to the far right */
         }
     </style>
 </head>
@@ -145,25 +226,28 @@
             <div id="countdownName">Countdown</div>
             <div id="countdownTimer" class="countdown">
                 <div class="countdown-item">
-                    <span id="days">0</span> Days
+                    <span id="days">0</span>
+                    <label>Days</label>
                 </div>
                 <div class="countdown-item">
-                    <span id="hours">0</span> Hours
+                    <span id="hours">0</span>
+                    <label>Hours</label>
                 </div>
                 <div class="countdown-item">
-                    <span id="minutes">0</span> Minutes
+                    <span id="minutes">0</span>
+                    <label>Minutes</label>
                 </div>
                 <div class="countdown-item">
-                    <span id="seconds">0</span> Seconds
+                    <span id="seconds">0</span>
+                    <label>Seconds</label>
                 </div>
             </div>
             <button id="toggleTasksButton">Show Tasks</button>
         </div>
-
         <div class="tasks-container" id="tasksContainer">
             <div class="tasks-header">
                 <h2>Tasks</h2>
-                <button id="addTaskButton">Add Task</button>
+                <button id="addTaskButton">Add Tasks</button>
             </div>
             <div id="progressContainer">
                 <div id="progressBar"></div>
@@ -189,13 +273,13 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        // Countdown ID
+
+        // Get countdown ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const countdownId = urlParams.get("id");
 
         if (countdownId) {
-            db.ref(`countdowns/${countdownId}`).once('value').then(snapshot => {
+            db.ref('countdowns/' + countdownId).once('value').then(snapshot => {
                 const data = snapshot.val();
                 document.getElementById('countdownName').innerText = data.name;
 
@@ -209,90 +293,131 @@
                     if (distance < 0) {
                         countdownTimer.innerText = "Countdown Ended!";
                         clearInterval(timerInterval);
+                        alert("The countdown has ended!");
                         return;
                     }
 
-                    document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    document.getElementById('minutes').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById('seconds').innerText = Math.floor((distance % (1000 * 60)) / 1000);
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById('days').innerText = days;
+                    document.getElementById('hours').innerText = hours;
+                    document.getElementById('minutes').innerText = minutes;
+                    document.getElementById('seconds').innerText = seconds;
                 };
+
                 const timerInterval = setInterval(updateCountdown, 1000);
 
-                // Dark Mode Toggle & Persistence
-                db.ref(`countdowns/${countdownId}/darkMode`).once('value', (snapshot) => {
-                    if (snapshot.val() === true) document.body.classList.add("dark-mode");
-                });
-                document.getElementById('themeToggleButton').addEventListener('click', () => {
-                    document.body.classList.toggle("dark-mode");
-                    const darkModeEnabled = document.body.classList.contains("dark-mode");
-                    db.ref(`countdowns/${countdownId}`).update({ darkMode: darkModeEnabled });
-                });
-                
-                // Show/Hide Tasks
+                // Show Tasks
                 document.getElementById('toggleTasksButton').addEventListener('click', () => {
                     const tasksContainer = document.getElementById('tasksContainer');
                     tasksContainer.style.display = tasksContainer.style.display === 'none' ? 'block' : 'none';
                 });
 
-                // Task Input
+                // Add Task Button
                 document.getElementById('addTaskButton').addEventListener('click', () => {
                     const newTaskInput = document.getElementById('newTaskInput');
                     newTaskInput.style.display = 'block';
                     newTaskInput.focus();
                 });
-                
-                // Add Task with Due Date Countdown
+
+                // Adding Tasks
                 document.getElementById('newTaskInput').addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         const taskName = e.target.value;
                         if (taskName) {
-                            const dueDate = new Date(prompt("Set a due date (yyyy-mm-dd):", "2024-12-31")).getTime();
-                            db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set({ completed: false, dueDate });
+                            const dueDate = prompt("Set a due date (yyyy-mm-dd):", "2024-12-31");
+                            db.ref(`countdowns/${countdownId}/tasks/${taskName}`).set({
+                                completed: false,
+                                dueDate
+                            });
                             e.target.value = '';
                         }
                     }
                 });
 
-                // Display Tasks with Edit, Delete, and Countdown
+                // Theme Toggle
+                document.getElementById('themeToggleButton').addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                });
+
+                // Load and Display Tasks
                 const taskList = document.getElementById('taskList');
+
+                // Load and Display Tasks with Edit and Delete Buttons
                 db.ref(`countdowns/${countdownId}/tasks`).on('value', (snapshot) => {
                     taskList.innerHTML = '';
                     const tasks = snapshot.val() || {};
-                    Object.entries(tasks).forEach(([taskName, { completed, dueDate }]) => {
-                        const taskElement = document.createElement('div');
-                        taskElement.classList.add('task');
-                        
-                        const now = new Date().getTime();
-                        const remainingTime = dueDate - now;
-                        const daysRemaining = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-                        const dueText = remainingTime > 0 ? ` (in ${daysRemaining} days)` : ' (overdue)';
 
-                        taskElement.innerHTML = `
-                            <input type="checkbox" ${completed ? 'checked' : ''}>
-                            <span class="${completed ? 'completed' : ''}">${taskName}${dueText}</span>
-                            <button class="editTaskButton">Edit</button>
-                            <button class="deleteTaskButton">Delete</button>
-                        `;
-                        taskList.appendChild(taskElement);
+                    Object.entries(tasks).forEach(([taskName, {
+                        completed,
+                        dueDate
+                    }]) => {
+                        const taskItem = document.createElement('div');
+                        taskItem.classList.add('task');
+                        if (completed) taskItem.classList.add('completed');
 
-                        // Edit Task
-                        taskElement.querySelector('.editTaskButton').addEventListener('click', () => {
-                            const newTaskName = prompt('Edit Task Name:', taskName);
-                            const newDueDate = new Date(prompt('Edit Due Date (yyyy-mm-dd):', new Date(dueDate).toISOString().split('T')[0])).getTime();
-                            if (newTaskName) {
-                                db.ref(`countdowns/${countdownId}/tasks/${newTaskName}`).set({ completed, dueDate: newDueDate });
-                                if (newTaskName !== taskName) db.ref(`countdowns/${countdownId}/tasks/${taskName}`).remove();
+                        // Create a container for the checkbox and label
+                        const taskContainer = document.createElement('div');
+                        taskContainer.style.display = 'flex';
+                        taskContainer.style.alignItems = 'center';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = completed;
+                        checkbox.addEventListener('change', () => {
+                            db.ref(`countdowns/${countdownId}/tasks/${taskName}`).update({
+                                completed: checkbox.checked
+                            });
+                        });
+
+                        const taskLabel = document.createElement('label');
+                        taskLabel.innerText = `${taskName} (${dueDate})`;
+                        taskContainer.appendChild(checkbox);
+                        taskContainer.appendChild(taskLabel);
+
+                        // Edit Button
+                        const editButton = document.createElement('button');
+                        editButton.innerHTML = '<i class="fas fa-edit"></i>';
+                        editButton.classList.add('edit-button');
+                        editButton.onclick = () => {
+                            const newTaskName = prompt("Edit task name:", taskName);
+                            if (newTaskName && newTaskName.trim() !== "") {
+                                db.ref(`countdowns/${countdownId}/tasks/${taskName}`).remove();
+                                db.ref(`countdowns/${countdownId}/tasks/${newTaskName.trim()}`).set({
+                                    completed,
+                                    dueDate
+                                });
                             }
-                        });
+                        };
 
-                        // Delete Task
-                        taskElement.querySelector('.deleteTaskButton').addEventListener('click', () => {
-                            db.ref(`countdowns/${countdownId}/tasks/${taskName}`).remove();
-                        });
+                        // Delete Button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                        deleteButton.classList.add('delete-button');
+                        deleteButton.onclick = () => {
+                            if (confirm(`Are you sure you want to delete the task "${taskName}"?`)) {
+                                db.ref(`countdowns/${countdownId}/tasks/${taskName}`).remove();
+                            }
+                        };
+
+                        // Button Container
+                        const buttonContainer = document.createElement('div');
+                        buttonContainer.classList.add('button-container');
+                        buttonContainer.appendChild(editButton);
+                        buttonContainer.appendChild(deleteButton);
+
+                        // Append elements to the task item
+                        taskItem.appendChild(taskContainer);
+                        taskItem.appendChild(buttonContainer);
+                        taskList.appendChild(taskItem);
                     });
-                    updateProgressBar();
+
+                    updateProgressBar(); // Update progress bar after tasks are loaded
                 });
+
 
                 // Progress Bar
                 function updateProgressBar() {
@@ -310,4 +435,5 @@
         }
     </script>
 </body>
+
 </html>
